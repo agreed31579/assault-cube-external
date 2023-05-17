@@ -1,5 +1,4 @@
-ASSAULT CUBE EXTERNAL MADE BY AGREED#3379
+assault cube external made by agreed#3379
+run "start.bat" to install pip packages and the cheat
 
-OPEN CMD IN THE DIRECTORY AND RUN "pip install -r requirements.txt" AND THEN LAUNCH EXTERNAL.PY
-
-OR IF U LAZY THEN RUN START.BAT
+**ASSAULT CUBE NEEDS TO BE OPEN BEFORE YOU OPEN THE CHEAT**
