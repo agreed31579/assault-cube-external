@@ -10,6 +10,7 @@ import time
 import datetime
 import keyboard
 import tkinter
+import threading
 import customtkinter
 
 BOX_WIDTH = 20
@@ -83,7 +84,6 @@ def ButtonFunction1():
 def ButtonFunction2():
     pm.write_int(GetPtrAddr(gameModule + 0x0017E0A8, [0x144]), 6969)
 
-    
 def ButtonFunction3():
     pm.write_int(GetPtrAddr(gameModule + 0x00195404, [0x140]), 6969)
 
@@ -92,6 +92,14 @@ def ButtonFunction4():
     
 def ButtonFunction5():
     pm.write_int(GetPtrAddr(gameModule + 0x00195404, [0xF0]), 6969)
+    
+def ButtonFunction6():
+    while True:
+        pm.write_int(GetPtrAddr(gameModule + 0x0017E0A8, [0x364, 0x0C, 0x60]), 0)
+
+def start_button_function6():
+    thread = threading.Thread(target=ButtonFunction6)
+    thread.start()
 
 def GetPtrAddr(base, offsets):
     addr = pm.read_int(base)
@@ -117,6 +125,9 @@ button.place(relx=0.5, rely=0.9, anchor=tkinter.CENTER)
 
 checkbox_1 = customtkinter.CTkCheckBox(master=app, text="ESP", command=lambda: [init(), main()])
 checkbox_1.pack(side="left", padx=10, pady=0)
+
+checkbox_1 = customtkinter.CTkCheckBox(master=app, text="No Recoil", command=start_button_function6)
+checkbox_1.pack(side="right", padx=10, pady=0)
 
 def on_hotkey_press_z():
     ButtonFunction1()
