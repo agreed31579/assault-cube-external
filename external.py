@@ -108,6 +108,24 @@ def GetPtrAddr(base, offsets):
             addr = pm.read_int(addr + i)
     return addr + offsets[-1]
 
+is_esp_enabled = False
+is_esp_running = False
+
+def on_checkbox_1_click():
+    global is_esp_enabled, is_esp_running
+    if not is_esp_running:
+        is_esp_enabled = not is_esp_enabled
+        if is_esp_enabled:
+            is_esp_running = True
+            thread = threading.Thread(target=start_main_thread)
+            thread.start()
+
+def start_main_thread():
+    global is_esp_running
+    init()
+    main()
+    is_esp_running = False
+
 button = customtkinter.CTkButton(master=app, text="Health (Z)", command=ButtonFunction1)
 button.place(relx=0.5, rely=0.1, anchor=tkinter.CENTER)
 
@@ -123,11 +141,11 @@ button.place(relx=0.5, rely=0.7, anchor=tkinter.CENTER)
 button = customtkinter.CTkButton(master=app, text="Shield (X)", command=ButtonFunction5)
 button.place(relx=0.5, rely=0.9, anchor=tkinter.CENTER)
 
-checkbox_1 = customtkinter.CTkCheckBox(master=app, text="ESP", command=lambda: [init(), main()])
+checkbox_1 = customtkinter.CTkCheckBox(master=app, text="ESP", command=on_checkbox_1_click)
 checkbox_1.pack(side="left", padx=10, pady=0)
 
-checkbox_1 = customtkinter.CTkCheckBox(master=app, text="No Recoil", command=start_button_function6)
-checkbox_1.pack(side="right", padx=10, pady=0)
+checkbox_2 = customtkinter.CTkCheckBox(master=app, text="No Recoil", command=start_button_function6)
+checkbox_2.pack(side="right", padx=10, pady=0)
 
 def on_hotkey_press_z():
     ButtonFunction1()
