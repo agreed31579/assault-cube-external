@@ -78,6 +78,12 @@ app.geometry("400x240")
 pm = pymem.Pymem("ac_client.exe")
 gameModule = module_from_name(pm.process_handle, "ac_client.exe").lpBaseOfDll
 
+is_esp_enabled = False
+is_esp_running = False
+is_infi_jump_enabled = False
+is_running = False
+infi_jump_thread = None
+
 def ButtonFunction1():
     pm.write_int(GetPtrAddr(gameModule + 0x17E0A8, [0xEC]), 6969)
 
@@ -108,8 +114,19 @@ def GetPtrAddr(base, offsets):
             addr = pm.read_int(addr + i)
     return addr + offsets[-1]
 
-is_esp_enabled = False
-is_esp_running = False
+def toggle_loop():
+    global is_running
+    is_running = not is_running
+
+keyboard.on_press_key('u', lambda _: toggle_loop())
+
+def main_loop():
+    while True:
+        if is_running:
+            address = 0x0079F9A5
+            value = 1
+            pm.write_int(address, value)
+        time.sleep(0.0001)
 
 def on_checkbox_1_click():
     global is_esp_enabled, is_esp_running
@@ -119,6 +136,21 @@ def on_checkbox_1_click():
             is_esp_running = True
             thread = threading.Thread(target=start_main_thread)
             thread.start()
+
+def toggle_infi_jump():
+    global is_infi_jump_enabled, infi_jump_thread
+    is_infi_jump_enabled = not is_infi_jump_enabled
+
+    if is_infi_jump_enabled and infi_jump_thread is None:
+        infi_jump_thread = threading.Thread(target=infi_jump_loop)
+        infi_jump_thread.start()
+
+def infi_jump_loop():
+    while is_infi_jump_enabled:
+        address = 0x0079F9A5
+        value = 1
+        pm.write_int(address, value)
+        time.sleep(0.0001)
 
 def start_main_thread():
     global is_esp_running
@@ -144,8 +176,11 @@ button.place(relx=0.5, rely=0.9, anchor=tkinter.CENTER)
 checkbox_1 = customtkinter.CTkCheckBox(master=app, text="ESP", command=on_checkbox_1_click)
 checkbox_1.pack(side="left", padx=10, pady=0)
 
-checkbox_2 = customtkinter.CTkCheckBox(master=app, text="No Recoil", command=start_button_function6)
-checkbox_2.pack(side="right", padx=10, pady=0)
+checkbox_2 = customtkinter.CTkCheckBox(master=app, text="Infi Jump", command=toggle_infi_jump)
+checkbox_2.place(x=10, y=app.winfo_height() - 30)
+
+checkbox_3 = customtkinter.CTkCheckBox(master=app, text="No Recoil", command=start_button_function6)
+checkbox_3.pack(side="right", padx=10, pady=0)
 
 def on_hotkey_press_z():
     ButtonFunction1()
